@@ -5,7 +5,7 @@ namespace aoc_2021;
 
 public static class Utils
 {
-    public static string LoadData(string? customResourceName = null, [CallerMemberName, NotNull] string callerMemberName = null)
+    public static string LoadData(string? customResourceName = null, [CallerMemberName] string? callerMemberName = null)
     {
         var resourceName = nameof(aoc_2021) + ".Data." + (customResourceName ?? callerMemberName) + ".txt";
         var assembly = Assembly.GetExecutingAssembly();
