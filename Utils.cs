@@ -15,4 +15,6 @@ public static class Utils
         using var reader = new StreamReader(resourceStream);
         return reader.ReadToEnd();
     }
+
+    public static readonly char[] Space = { ' ' };
 }

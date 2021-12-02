@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace aoc_2021;
 
 public class Day01
