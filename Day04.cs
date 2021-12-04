@@ -76,5 +76,41 @@ public class Day04
 
         Assert.Equal(expectedResult, remaining * winningNumber);
     }
+
+    [Theory]
+    [InlineData("Day04_Example", 1924)]
+    [InlineData("Day04_Input", 1830)]
+    public void Part2(string input, int expectedResult)
+    {
+        var game = ParseBingoGame(LoadData(input));
+        var boards = game.Boards;
+        BingoBoard? winner = null;
+        int? winningNumber = null;
+        foreach (var drawn in game.DrawnNumbers)
+        {
+            boards = boards
+                .Where(b => b.Runs.All(r => !r.IsEmpty))
+                .Select(b => new BingoBoard(
+                    b.RemainingNumbers.Remove(drawn),
+                    b.Runs.Select(r => r.Remove(drawn)).ToImmutableList()))
+                .ToImmutableList();
+
+            if (boards.Count == 1)
+            {
+                winner = boards.SingleOrDefault(b => b.Runs.Any(r => r.IsEmpty));
+                if (winner != null)
+                {
+                    winningNumber = drawn;
+                    break;
+                }
+            }
+        }
+
+        Assert.NotNull(winner);
+        Assert.NotNull(winningNumber);
+        var remaining = winner!.RemainingNumbers.Sum();
+
+        Assert.Equal(expectedResult, remaining * winningNumber);
+    }
 }
 
