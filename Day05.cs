@@ -13,33 +13,46 @@ public class Day05
         );
     }
 
-    public static IEnumerable<Vector2> Expand(Line line, Func<Vector2, int> getCoordinate, Vector2 incrementBy)
+    public static Vector2 Normalize45(Vector2 vector)
     {
-        var (start, end) = getCoordinate(line.start) < getCoordinate(line.end) ? (line.start, line.end) : (line.end, line.start);
+        var length = vector.Length();
+        var x = Math.Round(vector.X / length, 4);
+        var y = Math.Round(vector.Y / length, 4);
+        var n45 = Math.Round(Math.Sqrt(2) / 2, 4);
+        if (x == n45) x = 1;
+        if (x == -n45) x = -1;
+        if (y == n45) y = 1;
+        if (y == -n45) y = -1;
+        return new Vector2((int)x, (int)y);
+    }
 
-        var from = getCoordinate(start);
-        var to = getCoordinate(end);
-        var count = to - from;
-        for (int i = 0; i <= count; i++)
+    public static IEnumerable<Vector2> Expand(Line line)
+    {
+        var direction = line.end - line.start;
+        var incrementBy = Normalize45(direction);
+        var times = (int)Math.Max(Math.Abs(line.start.X - line.end.X), Math.Abs(line.start.Y - line.end.Y));
+        for (int i = 0; i <= times; i++)
         {
-            yield return start + incrementBy * i;
+            yield return line.start + incrementBy * i;
         }
     }
-    public static bool IsHorizontal(Line line) => line.start.Y == line.end.Y;
-    public static bool Isvertical(Line line) => line.start.X == line.end.X;
 
     [Theory]
-    [InlineData("Day05_Example01", 5)]
-    [InlineData("Day05_Input", 5280)]
-    public void Part1(string input, int expectedResult)
+    [InlineData("Day05_Example01", true, 5)]
+    [InlineData("Day05_Input", true, 5280)]
+    [InlineData("Day05_Example01", false, 12)]
+    [InlineData("Day05_Input", false, 16716)]
+    public void Part1(string input, bool onAxisOnly, int expectedResult)
     {
         var lines = LoadData(input).Split(Environment.NewLine).Select(ParseLine);
 
+        if (onAxisOnly)
+        {
+            lines = lines.Where(l => l.start.Y == l.end.Y || l.start.X == l.end.X);
+        }
+
         var covered = lines
-            .SelectMany(line
-                => IsHorizontal(line) ? Expand(line, v => (int)v.X, Vector2.UnitX)
-                : Isvertical(line) ? Expand(line, v => (int)v.Y, Vector2.UnitY)
-                : new Vector2[0])
+            .SelectMany(Expand)
             .GroupBy(x => x)
             .ToDictionary(x => x, g => g.Count());
 
