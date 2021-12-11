@@ -63,7 +63,7 @@ public class Day10
         var scores = lines
             .Select(ValidateLine)
             .Where(l => l.state == LineState.Incomplete)
-            .Select(l => l.expected.Aggregate(0l, (total, next) => total * 5 + next switch {
+            .Select(l => l.expected.Aggregate(0L, (total, next) => total * 5 + next switch {
                 ')' => 1,
                 ']' => 2,
                 '}' => 3,
