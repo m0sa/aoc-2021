@@ -51,7 +51,7 @@ public class Day08
     [Theory]
     [InlineData("Day08_Example02", 5353)]
     [InlineData("Day08_Example01", 61229)]
-    [InlineData("Day08_Input", 521)]
+    [InlineData("Day08_Input", 1016804)]
     public void Part02(string input, int expectedResult)
     {
         var lines = LoadData(input).Split(Environment.NewLine);
