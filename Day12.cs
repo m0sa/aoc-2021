@@ -32,7 +32,7 @@ public class Day12
     [InlineData("Day12_Input", 4411)]
     public void Part1(string input, int expectedResult)
     {
-        var paths = Traverse(Parse(LoadData(input)), ImmutableList<string>.Empty, start);
+        var paths = Traverse(Parse(LoadData(input)), Path.Empty, start);
 
         Assert.Equal(expectedResult, paths.Count());
     }
@@ -55,7 +55,7 @@ public class Day12
     [InlineData("Day12_Input", 136767)]
     public void Part2(string input, int expectedResult)
     {
-        var paths = Traverse2(Parse(LoadData(input)), ImmutableList<string>.Empty, start);
+        var paths = Traverse2(Parse(LoadData(input)), Path.Empty, start);
 
         Assert.Equal(expectedResult, paths.Count());
     }
@@ -65,14 +65,11 @@ public class Day12
         var path = visited.Add(position);
         return map[position].SelectMany(dst =>
             dst switch {
-                string d when d == d.ToUpperInvariant() => Traverse2(map, path, d), // big cave
                 start => Enumerable.Empty<Path>(), // not valid
                 end => Traverse(map, path, end), // end with regular traversal
-                _ => path.Count(x => x == dst) switch {
-                    0 => Traverse2(map, path, dst), // visit small cave for 1st time
-                    1 => Traverse(map, path, dst), // visit small cave for 2nd time, continue with regular traversal
-                    _ => Enumerable.Empty<Path>(), // can't visit cave for 3rd+ time
-                },
+                string d when d == d.ToUpperInvariant() || !path.Contains(d)
+                     => Traverse2(map, path, d),  // big cave or small cave for 1st time
+                _ => Traverse(map, path, dst) // visit small cave for 2nd time, continue with regular traversal
             });
     }
 }
