@@ -30,30 +30,30 @@ public class Day14
         for (var s = 0; s < steps; s++)
         {
             var next = new Dictionary<string, long>();
-            foreach(var sequence in current)
+            foreach(var (sequence, count) in current)
             {
-                if (rules.TryGetValue(sequence.Key, out var insert))
+                if (rules.TryGetValue(sequence, out var insert))
                 {
-                    Increment(next, $"{sequence.Key[0]}{insert}", sequence.Value);
-                    Increment(next, $"{insert}{sequence.Key[1]}", sequence.Value);
+                    Increment(next, $"{sequence[0]}{insert}", count);
+                    Increment(next, $"{insert}{sequence[1]}", count);
                 }
                 else
                 {
-                    Increment(next, sequence.Key, sequence.Value);
+                    Increment(next, sequence, count);
                 }
             }
             current = next;
         }
 
-        // every character appears twice, except the first and last one
         var counts = new Dictionary<string, long>();
+        foreach(var (sequence, count) in current)
+        {
+            Increment(counts, sequence.Substring(0, 1), count);
+            Increment(counts, sequence.Substring(1, 1), count);
+        }
+        // every character is counted twice, except the first and last one
         Increment(counts, firstLine.Substring(0, 1));
         Increment(counts, firstLine.Substring(firstLine.Length - 1, 1));
-        foreach(var kvp in current)
-        {
-            Increment(counts, kvp.Key.Substring(0, 1), kvp.Value);
-            Increment(counts, kvp.Key.Substring(1, 1), kvp.Value);
-        }
 
         var result = counts.MaxBy(x => x.Value).Value / 2 - counts.MinBy(x => x.Value).Value / 2;
         Assert.Equal(expected, result);
