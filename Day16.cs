@@ -17,28 +17,6 @@ public class Day16
             }
         }
 
-        public static bool TryReadNumber(IEnumerator<bool> bitStream, long numberOfBits, out long value)
-        {
-            value = default;
-            var bitsRead = ReadBits(bitStream, numberOfBits).ToList();
-            if (bitsRead.Count != numberOfBits) return false;
-
-            using var bitsReadStream = bitsRead.GetEnumerator();
-            value = ReadNumber(bitsReadStream, numberOfBits);
-            return true;
-        }
-        public static long ReadNumber(IEnumerator<bool> bitStream, long numberOfBits) =>
-            ReadBits(bitStream, numberOfBits)
-                .Select((bit, index) => bit ? 1L << (int)(numberOfBits - index - 1) : 0L)
-                .Sum();
-
-        public static IEnumerable<bool> ReadBits(IEnumerator<bool> bitStream, long numberOfBits)
-        {
-            while (numberOfBits-- > 0 && bitStream.MoveNext())
-            {
-                yield return bitStream.Current;
-            }
-        }
         public interface IPacket
         {
             long Version { get; }
@@ -49,7 +27,7 @@ public class Day16
 
         public static bool TryReadPacket(IEnumerator<bool> bitStream, out IPacket packet)
         {
-            packet = default;
+            packet = new LiteralValuePacket(0, 0, 0);
             if (!TryReadNumber(bitStream, 3, out var version) || !TryReadNumber(bitStream, 3, out var typeId))
             {
                 return false;
@@ -110,13 +88,13 @@ public class Day16
     }
 
     [Fact]
-    public void ReadNumber()
+    public void ReadNumberTest()
     {
         using var bitStream = "11010010".Select(c => c == '1').GetEnumerator();
-        Assert.Equal(6, BITS.ReadNumber(bitStream, 3));
-        Assert.Equal(4, BITS.ReadNumber(bitStream, 3));
-        Assert.Equal(1, BITS.ReadNumber(bitStream, 1));
-        Assert.Equal(0, BITS.ReadNumber(bitStream, 1));
+        Assert.Equal(6, ReadNumber(bitStream, 3));
+        Assert.Equal(4, ReadNumber(bitStream, 3));
+        Assert.Equal(1, ReadNumber(bitStream, 1));
+        Assert.Equal(0, ReadNumber(bitStream, 1));
     }
 
     [Fact]
