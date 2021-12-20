@@ -6,3 +6,4 @@ global using System.Reflection;
 global using System.Text.RegularExpressions;
 global using static aoc_2021.Utils;
 global using Xunit;
+global using Xunit.Abstractions;

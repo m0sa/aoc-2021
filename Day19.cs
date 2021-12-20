@@ -1,5 +1,3 @@
-using Xunit.Abstractions;
-
 namespace aoc_2021;
 
 public class Day19
